@@ -26,8 +26,10 @@ class ForecastNotificationServiceSpec extends Specification with Specs2RouteTest
 
     "accept a Forecast JSON object post to the /notifications path" in {
 
-      Put("/notifications", Forecast("name", 12)) ~> myRoute ~> check {
-        responseAs[String] must contain("Say hello")
+      Post("/notifications", Forecast("nameValue", 12)) ~> sealRoute(myRoute) ~> check {
+        status mustEqual OK
+        responseAs[String] must contain("nameValue")
+        responseAs[String] must contain("12")
       }
     }
   }
