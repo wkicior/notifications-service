@@ -4,17 +4,12 @@ import org.specs2.mutable.Specification
 import spray.testkit.Specs2RouteTest
 import spray.http._
 import StatusCodes._
+import ForecastJsonProtocol._
 
 class ForecastNotificationServiceSpec extends Specification with Specs2RouteTest with ForecastNotificationService {
   def actorRefFactory = system
   
   "MyService" should {
-
-    "return a greeting for GET requests to the root path" in {
-      Get() ~> myRoute ~> check {
-        responseAs[String] must contain("Say hello")
-      }
-    }
 
     "leave GET requests to other paths unhandled" in {
       Get("/kermit") ~> myRoute ~> check {
@@ -22,10 +17,17 @@ class ForecastNotificationServiceSpec extends Specification with Specs2RouteTest
       }
     }
 
-    "return a MethodNotAllowed error for PUT requests to the root path" in {
-      Put() ~> sealRoute(myRoute) ~> check {
+    "return a MethodNotAllowed error for GET requests to the /notifications path" in {
+      Get("/notifications") ~> sealRoute(myRoute) ~> check {
         status === MethodNotAllowed
-        responseAs[String] === "HTTP method not allowed, supported methods: GET"
+        responseAs[String] === "HTTP method not allowed, supported methods: POST"
+      }
+    }
+
+    "accept a Forecast JSON object post to the /notifications path" in {
+
+      Put("/notifications", Forecast("name", 12)) ~> myRoute ~> check {
+        responseAs[String] must contain("Say hello")
       }
     }
   }

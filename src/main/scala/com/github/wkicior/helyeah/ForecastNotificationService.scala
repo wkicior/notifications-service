@@ -11,15 +11,10 @@ class ForecastNotificationServiceActor extends Actor with ForecastNotificationSe
   def actorRefFactory = context
   def receive = runRoute(myRoute)
 }
-
-
-
 object ForecastJsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val forecastFormat = jsonFormat2(Forecast)
 }
 
-
-// this trait defines our service behavior independently from the service actor
 trait ForecastNotificationService extends HttpService {
   import ForecastJsonProtocol._
   val myRoute =
