@@ -1,6 +1,6 @@
  package com.github.wkicior.helyeah.model
 
- /**
+/**
  * Created by disorder on 20.02.15.
  */
 
