@@ -20,7 +20,7 @@ object ForecastJsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
 
 trait ForecastNotificationServiceRS extends HttpService {
   import ForecastJsonProtocol._
-  val forecastNotificationService = actorRefFactory.actorOf(Props[ForecastNotificationService])
+  val forecastNotificationService = actorRefFactory.actorOf(ForecastNotificationService.props)
   val myRoute =
     pathPrefix("notifications") {
       post {

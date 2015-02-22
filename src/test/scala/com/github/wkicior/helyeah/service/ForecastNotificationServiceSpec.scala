@@ -3,8 +3,8 @@ package com.github.wkicior.helyeah.service
 import akka.actor.ActorSystem
 import akka.actor.Actor
 import akka.actor.Props
-import akka.testkit.{ TestActors, TestKit, ImplicitSender }
-import com.github.wkicior.helyeah.model.{ConditionEntry, Day, Forecast, NotificationRequest}
+import akka.testkit.{TestProbe, TestActors, TestKit, ImplicitSender}
+import com.github.wkicior.helyeah.model._
 import org.scalatest.WordSpecLike
 import org.scalatest.Matchers
 import org.scalatest.BeforeAndAfterAll
@@ -20,17 +20,27 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
-  "An Notification actor" must {
 
+  val notificationRepositoryProbe = TestProbe()
+  val notificationRepositoryProps = Props(new Actor {
+    def receive = {
+      case x => notificationRepositoryProbe.ref forward x
+    }
+  })
+
+  val notificationService = system.actorOf(ForecastNotificationService.props(notificationRepositoryProps))
+
+  "An Notification actor" must {
     "handle notificationRequest" in {
-      val notificationService = system.actorOf(Props[ForecastNotificationService])
+
       val condEntry: ConditionEntry = new ConditionEntry(12, 13, 14, 15)
       val days: Day = new Day(List(condEntry), "date")
       val forecast: Forecast = new Forecast(List(days))
       val notificationRequest = new NotificationRequest(forecast)
       notificationService ! notificationRequest
+      notificationRepositoryProbe.expectMsg(GetNotificationPlans)
+      notificationRepositoryProbe.reply(Seq(new NotificationPlan("test@mail")))
     }
-
   }
 
 }
