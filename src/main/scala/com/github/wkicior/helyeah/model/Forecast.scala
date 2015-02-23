@@ -1,6 +1,7 @@
  package com.github.wkicior.helyeah.model
 
 /**
+ * The NotificationRequest with a Forecast object inside
  * Created by disorder on 20.02.15.
  */
 
