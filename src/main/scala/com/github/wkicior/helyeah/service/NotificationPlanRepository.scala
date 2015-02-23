@@ -15,6 +15,7 @@ class NotificationPlanRepository extends Actor {
 
   def receive = {
     case GetNotificationPlans =>
+      log.info("GentNotificationPlans")
       val plans = Seq(new NotificationPlan("diso.junk@gmail.com"), NotificationPlan("hcsk8er@wp.pl"))
       sender ! plans
     case _ => log.error("Not implemented yet")

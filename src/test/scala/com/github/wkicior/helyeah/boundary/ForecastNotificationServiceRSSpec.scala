@@ -1,9 +1,8 @@
 package com.github.wkicior.helyeah.boundary
 
-import com.github.wkicior.helyeah.model.{Forecast, Day, ConditionEntry, NotificationRequest}
+import com.github.wkicior.helyeah.model.{ConditionEntry, Day, Forecast, NotificationRequest}
 import org.specs2.mutable.Specification
 import spray.http.StatusCodes._
-import spray.http._
 import spray.json._
 import spray.testkit.Specs2RouteTest
 
@@ -27,7 +26,7 @@ class ForecastNotificationServiceRSSpec extends Specification with Specs2RouteTe
     }
 
     "accept a Forecast JSON object post to the /notifications spath" in {
-      import ForecastJsonProtocol._
+      import com.github.wkicior.helyeah.boundary.ForecastJsonProtocol._
       val conditionEntriesD1 = List(ConditionEntry(12, 13, 14, 15))
       val days = List(Day(conditionEntriesD1, "2010-12-12"), Day(conditionEntriesD1, "2010-12-12"))
       val forecast = Forecast(days)
