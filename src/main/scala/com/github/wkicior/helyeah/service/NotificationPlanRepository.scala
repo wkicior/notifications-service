@@ -1,10 +1,14 @@
 package com.github.wkicior.helyeah.service
 
-import akka.actor.Actor
+import akka.actor.{Props, Actor}
 import akka.event.Logging
 import com.github.wkicior.helyeah.model.NotificationPlan
 
 object GetNotificationPlans
+
+object NotificationPlanRepository {
+  def props(): Props = Props[NotificationPlanRepository]
+}
 
 /**
  * NotificationPlanRepository for fetching the NotificationPlans

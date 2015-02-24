@@ -1,7 +1,8 @@
 package com.github.wkicior.helyeah.service
 
-import akka.actor.ActorSystem
-import akka.testkit.{EventFilter, ImplicitSender, TestKit}
+import akka.actor.{Actor, Props, ActorSystem}
+import akka.testkit.{TestProbe, EventFilter, ImplicitSender, TestKit}
+import com.github.wkicior.helyeah.model.{ConditionEntry, Day, Forecast, NotificationPlan}
 import com.typesafe.config.ConfigFactory
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
@@ -17,7 +18,14 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     TestKit.shutdownActorSystem(system)
   }
 
-  val notificationPlanExecutor = system.actorOf(NotificationPlanExecutor.props())
+  val forecastJudgeProbe = TestProbe()
+  val forecastJudgeProps = Props(new Actor {
+    def receive = {
+      case x => forecastJudgeProbe.ref forward x
+    }
+  })
+
+  val notificationPlanExecutor = system.actorOf(NotificationPlanExecutor.props(forecastJudgeProps))
 
   "A NotificationPlanExecutor actor" must {
     "reject other message than NotificationRequest" in {
@@ -25,6 +33,21 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
         notificationPlanExecutor ! "fail"
       }
     }
+    "ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message" in {
+      val plan: NotificationPlan = new NotificationPlan("mail")
+      val forecast: Forecast = prepareForecast
+      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      notificationPlanExecutor ! notificationPlanExecuteMessage
+      forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
+    }
   }
 
+  private def prepareForecast: Forecast = {
+    val ce: ConditionEntry = new ConditionEntry(12, 13, 14, 15)
+    val conditionEntries: Seq[ConditionEntry] = List(ce)
+    val day: Day = new Day(conditionEntries, "2015-01-01")
+    val days: Seq[Day] = List(day)
+    val forecast: Forecast = new Forecast(days)
+    forecast
+  }
 }

@@ -10,8 +10,8 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 object NotificationPlanDispatcher {
-  def props(): Props = Props(new NotificationPlanDispatcher(Props[NotificationPlanRepository]))
-  def props(notificationRepositoryProps: Props): Props = Props(new NotificationPlanDispatcher(notificationRepositoryProps))
+  def props(): Props = Props(new NotificationPlanDispatcher(NotificationPlanRepository.props))
+  def props(nrp: Props): Props = Props(new NotificationPlanDispatcher(nrp))
 }
 
 /**
@@ -24,7 +24,7 @@ class NotificationPlanDispatcher(notificationRepositoryProps: Props) extends Act
   val log = Logging(context.system, this)
 
   def createNotificationExecutor(): ActorRef = {
-    context.actorOf(Props[NotificationPlanExecutor])
+    context.actorOf(NotificationPlanExecutor.props)
   }
 
   def processNotification(notificationRequest: NotificationRequest): Unit = {
