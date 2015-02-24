@@ -58,8 +58,9 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       notificationDispatcher ! notificationRequest
 
       notificationRepositoryProbe.expectMsg(GetNotificationPlans)
-      notificationRepositoryProbe.reply(Seq(new NotificationPlan("test@mail")))
-      notificationExecutorProbe.expectMsg(new NotificationPlan("test@mail"))
+      notificationRepositoryProbe.reply(Seq(new NotificationPlan("test@mail"), new NotificationPlan("test2@mail")))
+      notificationExecutorProbe.expectMsg(new NotificationExecutorMessage(new NotificationPlan("test@mail"), forecast))
+      notificationExecutorProbe.expectMsg(new NotificationExecutorMessage(new NotificationPlan("test2@mail"), forecast))
     }
   }
 
