@@ -4,17 +4,17 @@ import akka.actor.{Props, Actor}
 import akka.event.Logging
 import com.github.wkicior.helyeah.model.{NotificationPlan, Forecast}
 
-object NotificationExecutor {
-  def props(): Props = Props(new NotificationExecutor())
+object NotificationPlanExecutor {
+  def props(): Props = Props(new NotificationPlanExecutor())
 
 }
 
-case class NotificationExecutorMessage(notificationPlan: NotificationPlan, forecast:Forecast)
+case class NotificationPlanExecutorMessage(notificationPlan: NotificationPlan, forecast:Forecast)
 
 /**
  * Created by disorder on 23.02.15.
  */
-class NotificationExecutor extends Actor {
+class NotificationPlanExecutor extends Actor {
   val log = Logging(context.system, this)
   def receive = {
     case _ => log.error("Unknown message") //TODO: accept NotificationPlan and Forecast

@@ -9,22 +9,22 @@ import com.github.wkicior.helyeah.model.{NotificationPlan, NotificationRequest}
 import scala.concurrent.Await
 import scala.concurrent.duration._
 
-object NotificationDispatcher {
-  def props(): Props = Props(new NotificationDispatcher(Props[NotificationPlanRepository]))
-  def props(notificationRepositoryProps: Props): Props = Props(new NotificationDispatcher(notificationRepositoryProps))
+object NotificationPlanDispatcher {
+  def props(): Props = Props(new NotificationPlanDispatcher(Props[NotificationPlanRepository]))
+  def props(notificationRepositoryProps: Props): Props = Props(new NotificationPlanDispatcher(notificationRepositoryProps))
 }
 
 /**
  * Main service for handling the notification request.
- * It reads all the notification plans and dispatches them to the NotificationExecutor children
+ * It reads all the notification plans and dispatches them to the NotificationPlanExecutor children
  * Created by disorder on 21.02.15.
  */
-class NotificationDispatcher(notificationRepositoryProps: Props) extends Actor{
+class NotificationPlanDispatcher(notificationRepositoryProps: Props) extends Actor{
   val NotificationPlanRepository = context.actorOf(notificationRepositoryProps, "notification-repository")
   val log = Logging(context.system, this)
 
   def createNotificationExecutor(): ActorRef = {
-    context.actorOf(Props[NotificationExecutor])
+    context.actorOf(Props[NotificationPlanExecutor])
   }
 
   def processNotification(notificationRequest: NotificationRequest): Unit = {
@@ -32,7 +32,7 @@ class NotificationDispatcher(notificationRepositoryProps: Props) extends Actor{
     implicit val timeout = Timeout(5 seconds)
     val plansFuture = NotificationPlanRepository ? GetNotificationPlans
     val plans = Await.result(plansFuture, timeout.duration).asInstanceOf[Seq[NotificationPlan]]
-    plans.foreach(plan => createNotificationExecutor ! new NotificationExecutorMessage(plan, notificationRequest.forecast))
+    plans.foreach(plan => createNotificationExecutor ! new NotificationPlanExecutorMessage(plan, notificationRequest.forecast))
   }
 
   def receive = {

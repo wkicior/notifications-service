@@ -2,7 +2,7 @@ package com.github.wkicior.helyeah.boundary
 
 import akka.actor.Actor
 import com.github.wkicior.helyeah.model.{ConditionEntry, Day, Forecast, NotificationRequest}
-import com.github.wkicior.helyeah.service.NotificationDispatcher
+import com.github.wkicior.helyeah.service.NotificationPlanDispatcher
 import spray.httpx._
 import spray.json._
 import spray.routing._
@@ -20,7 +20,7 @@ object ForecastJsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
 
 trait ForecastNotificationServiceRS extends HttpService {
   import com.github.wkicior.helyeah.boundary.ForecastJsonProtocol._
-  val forecastNotificationService = actorRefFactory.actorOf(NotificationDispatcher.props)
+  val forecastNotificationService = actorRefFactory.actorOf(NotificationPlanDispatcher.props)
   val myRoute =
     pathPrefix("notifications") {
       post {
