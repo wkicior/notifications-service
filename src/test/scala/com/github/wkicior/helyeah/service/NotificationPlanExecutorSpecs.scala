@@ -2,8 +2,9 @@ package com.github.wkicior.helyeah.service
 
 import akka.actor.{Actor, Props, ActorSystem}
 import akka.testkit.{TestProbe, EventFilter, ImplicitSender, TestKit}
-import com.github.wkicior.helyeah.model.{ConditionEntry, Day, Forecast, NotificationPlan}
+import com.github.wkicior.helyeah.model._
 import com.typesafe.config.ConfigFactory
+import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 
 /**
@@ -25,7 +26,14 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
   })
 
-  val notificationPlanExecutor = system.actorOf(NotificationPlanExecutor.props(forecastJudgeProps))
+  val notificationComposerProbe = TestProbe()
+  val notificationComposerProps = Props(new Actor {
+    def receive = {
+      case x => notificationComposerProbe.ref forward x
+    }
+  })
+
+  val notificationPlanExecutor = system.actorOf(NotificationPlanExecutor.props(forecastJudgeProps, notificationComposerProps))
 
   "A NotificationPlanExecutor actor" must {
     "reject other message than NotificationRequest" in {
@@ -33,12 +41,26 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
         notificationPlanExecutor ! "fail"
       }
     }
-    "ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message" in {
+    """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
+      |Giving up on poor conditions""".stripMargin in {
       val plan: NotificationPlan = new NotificationPlan("mail")
       val forecast: Forecast = prepareForecast
       val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
       notificationPlanExecutor ! notificationPlanExecuteMessage
       forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
+      forecastJudgeProbe.reply(ForecastRating(Rating.POOR, DateTime.now))
+    }
+
+    """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
+      |Sends notification to NotificationComposer on good conditions""".stripMargin in {
+      val plan: NotificationPlan = new NotificationPlan("mail")
+      val forecast: Forecast = prepareForecast
+      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      notificationPlanExecutor ! notificationPlanExecuteMessage
+      forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
+      val forecastRating = new ForecastRating(Rating.PROMISING, DateTime.now)
+      forecastJudgeProbe.reply(forecastRating)
+      notificationComposerProbe.expectMsg(new NotificationComposerMessage(plan, forecastRating))
     }
   }
 
