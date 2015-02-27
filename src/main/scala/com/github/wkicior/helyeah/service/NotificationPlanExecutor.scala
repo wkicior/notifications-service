@@ -31,7 +31,7 @@ class NotificationPlanExecutor(forecastJudgeProps: Props, notificationComposerPr
 
   def executeNotificationPlan(message: NotificationPlanExecutorMessage) {
     log.info("executing message: ${message}")
-    implicit val timeout = Timeout(100 milliseconds)
+    implicit val timeout = Timeout(1000 milliseconds)
     val forecastRatingFuture = forecastJudge ? message
     val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
     forecastRating.rating match {
