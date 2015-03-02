@@ -40,7 +40,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   "An NotificationPlanDispatcher actor" must {
     "handle notificationRequest on empty notification repository" in {
 
-      val condEntry: ConditionEntry = new ConditionEntry(12, 13, 14, 15)
+      val condEntry: ConditionEntry = new ConditionEntry("12:00", 13, 14, 15)
       val days: Day = new Day(List(condEntry), "date")
       val forecast: Forecast = new Forecast(List(days))
       val notificationRequest = new NotificationRequest(forecast)
@@ -52,7 +52,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   "A NotificationPlanDispatcher actor" must {
     "handle notificationRequest on notifications in repository and dispatch them to NotificationExecutors" in {
-      val condEntry: ConditionEntry = new ConditionEntry(12, 13, 14, 15)
+      val condEntry: ConditionEntry = new ConditionEntry("12:00", 13, 14, 15)
       val days: Day = new Day(List(condEntry), "date")
       val forecast: Forecast = new Forecast(List(days))
       val notificationRequest = new NotificationRequest(forecast)

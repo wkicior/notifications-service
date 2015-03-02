@@ -65,7 +65,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   }
 
   private def prepareForecast: Forecast = {
-    val ce: ConditionEntry = new ConditionEntry(12, 13, 14, 15)
+    val ce: ConditionEntry = new ConditionEntry("12:00", 13, 14, 15)
     val conditionEntries: Seq[ConditionEntry] = List(ce)
     val day: Day = new Day(conditionEntries, "2015-01-01")
     val days: Seq[Day] = List(day)

@@ -30,14 +30,14 @@ class NotificationPlanExecutor(forecastJudgeProps: Props, notificationComposerPr
   val forecastJudge = context.actorOf(forecastJudgeProps)
 
   def executeNotificationPlan(message: NotificationPlanExecutorMessage) {
-    log.info("executing message: ${message}")
+    log.info(s"executing message: ${message}")
     implicit val timeout = Timeout(1000 milliseconds)
     val forecastRatingFuture = forecastJudge ? message
     val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
     forecastRating.rating match {
       case Rating.NONE | Rating.POOR => log.info("No wind this time")
       case Rating.PROMISING | Rating.HIGH => sendNotificationToComposer(message, forecastRating)
-      case default => log.error("Unrecognized rating ${default}")
+      case default => log.error(s"Unrecognized rating ${default}")
     }
   }
 

@@ -27,7 +27,7 @@ class ForecastNotificationServiceRSSpec extends Specification with Specs2RouteTe
 
     "accept a Forecast JSON object post to the /notifications spath" in {
       import com.github.wkicior.helyeah.boundary.ForecastJsonProtocol._
-      val conditionEntriesD1 = List(ConditionEntry(12, 13, 14, 15))
+      val conditionEntriesD1 = List(ConditionEntry("12:00", 13, 14, 15))
       val days = List(Day(conditionEntriesD1, "2010-12-12"), Day(conditionEntriesD1, "2010-12-12"))
       val forecast = Forecast(days)
       val notificationRequest = NotificationRequest(forecast)
