@@ -40,10 +40,10 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   "An NotificationPlanDispatcher actor" must {
     "handle notificationRequest on empty notification repository" in {
 
-      val condEntry: ConditionEntry = new ConditionEntry("12:00", 13, 14, 15)
-      val days: Day = new Day(List(condEntry), "date")
-      val forecast: Forecast = new Forecast(List(days))
-      val notificationRequest = new NotificationRequest(forecast)
+      val condEntry: ConditionEntry = ConditionEntry("12:00", 13, 14, 15)
+      val days: Day = Day(List(condEntry), "date")
+      val forecast: Forecast = Forecast(List(days))
+      val notificationRequest = NotificationRequest(forecast)
       notificationPlanDispatcher ! notificationRequest
       notificationPlanRepositoryProbe.expectMsg(GetNotificationPlans)
       notificationPlanRepositoryProbe.reply(Seq())
@@ -52,16 +52,16 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
 
   "A NotificationPlanDispatcher actor" must {
     "handle notificationRequest on notifications in repository and dispatch them to NotificationExecutors" in {
-      val condEntry: ConditionEntry = new ConditionEntry("12:00", 13, 14, 15)
-      val days: Day = new Day(List(condEntry), "date")
-      val forecast: Forecast = new Forecast(List(days))
-      val notificationRequest = new NotificationRequest(forecast)
+      val condEntry: ConditionEntry = ConditionEntry("12:00", 13, 14, 15)
+      val days: Day = Day(List(condEntry), "date")
+      val forecast: Forecast = Forecast(List(days))
+      val notificationRequest = NotificationRequest(forecast)
       notificationPlanDispatcher ! notificationRequest
 
       notificationPlanRepositoryProbe.expectMsg(GetNotificationPlans)
-      notificationPlanRepositoryProbe.reply(Seq(new NotificationPlan("test@mail"), new NotificationPlan("test2@mail")))
-      notificationExecutorProbe.expectMsg(new NotificationPlanExecutorMessage(new NotificationPlan("test@mail"), forecast))
-      notificationExecutorProbe.expectMsg(new NotificationPlanExecutorMessage(new NotificationPlan("test2@mail"), forecast))
+      notificationPlanRepositoryProbe.reply(Seq(NotificationPlan("test@mail"), NotificationPlan("test2@mail")))
+      notificationExecutorProbe.expectMsg(NotificationPlanExecutorMessage(NotificationPlan("test@mail"), forecast))
+      notificationExecutorProbe.expectMsg(NotificationPlanExecutorMessage(NotificationPlan("test2@mail"), forecast))
     }
   }
 

@@ -41,10 +41,10 @@ class NotificationPlanExecutor(forecastJudgeProps: Props, notificationComposerPr
     }
   }
 
-  def sendNotificationToComposer(message: NotificationPlanExecutorMessage, forecastRating: ForecastRating): Unit = {
+  def sendNotificationToComposer(message: NotificationPlanExecutorMessage, forecastRating: ForecastRating) = {
     log.debug("It's a surf time")
     val notificationComposer = context.actorOf(notificationComposerProps)
-    notificationComposer ! new NotificationComposerMessage(message.notificationPlan, forecastRating)
+    notificationComposer ! NotificationComposerMessage(message.notificationPlan, forecastRating)
   }
 
   def receive = {

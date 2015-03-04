@@ -32,7 +32,7 @@ class NotificationPlanDispatcher(notificationRepositoryProps: Props) extends Act
     implicit val timeout = Timeout(5 seconds)
     val plansFuture = NotificationPlanRepository ? GetNotificationPlans
     val plans = Await.result(plansFuture, timeout.duration).asInstanceOf[Seq[NotificationPlan]]
-    plans.foreach(plan => createNotificationExecutor ! new NotificationPlanExecutorMessage(plan, notificationRequest.forecast))
+    plans.foreach(plan => createNotificationExecutor ! NotificationPlanExecutorMessage(plan, notificationRequest.forecast))
   }
 
   def receive = {

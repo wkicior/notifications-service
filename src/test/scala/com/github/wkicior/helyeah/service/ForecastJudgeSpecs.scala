@@ -30,58 +30,58 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   val forecastJudge = system.actorOf(ForecastJudge.props)
 
   def prepareForecastNone: Forecast = {
-    val ce1_1: ConditionEntry = new ConditionEntry("00:00", 50, 2, 3)
-    val ce1_2: ConditionEntry = new ConditionEntry("01:00", 40, 3, 1)
+    val ce1_1: ConditionEntry = ConditionEntry("00:00", 50, 2, 3)
+    val ce1_2: ConditionEntry = ConditionEntry("01:00", 40, 3, 1)
     val conditionEntries1: Seq[ConditionEntry] = List(ce1_1, ce1_2)
-    val day1: Day = new Day(conditionEntries1, "2015-01-01")
-    val ce2_1: ConditionEntry = new ConditionEntry("00:00", 50, 2, 3)
-    val ce2_2: ConditionEntry = new ConditionEntry("01:00", 30, 3, 4)
+    val day1: Day = Day(conditionEntries1, "2015-01-01")
+    val ce2_1: ConditionEntry = ConditionEntry("00:00", 50, 2, 3)
+    val ce2_2: ConditionEntry = ConditionEntry("01:00", 30, 3, 4)
     val conditionEntries2: Seq[ConditionEntry] = List(ce2_1, ce2_2)
-    val day2: Day = new Day(conditionEntries2, "2015-01-02")
+    val day2: Day = Day(conditionEntries2, "2015-01-02")
     val days: Seq[Day] = List(day1, day2)
-    val forecast: Forecast = new Forecast(days)
+    val forecast: Forecast = Forecast(days)
     forecast
   }
 
   def prepareForecastPoor: Forecast = {
-    val ce1_1: ConditionEntry = new ConditionEntry("00:00", 50, 8, 5)
-    val ce1_2: ConditionEntry = new ConditionEntry("01:00", 40, 7, 4)
+    val ce1_1: ConditionEntry = ConditionEntry("00:00", 50, 8, 5)
+    val ce1_2: ConditionEntry = ConditionEntry("01:00", 40, 7, 4)
     val conditionEntries1: Seq[ConditionEntry] = List(ce1_1, ce1_2)
-    val day1: Day = new Day(conditionEntries1, "2015-01-01")
-    val ce2_1: ConditionEntry = new ConditionEntry("00:00", 50, 12, 8)
-    val ce2_2: ConditionEntry = new ConditionEntry("01:00", 30, 15, 11)
+    val day1: Day =  Day(conditionEntries1, "2015-01-01")
+    val ce2_1: ConditionEntry = ConditionEntry("00:00", 50, 12, 8)
+    val ce2_2: ConditionEntry = ConditionEntry("01:00", 30, 15, 11)
     val conditionEntries2: Seq[ConditionEntry] = List(ce2_1, ce2_2)
-    val day2: Day = new Day(conditionEntries2, "2015-01-02")
+    val day2: Day = Day(conditionEntries2, "2015-01-02")
     val days: Seq[Day] = List(day1, day2)
-    val forecast: Forecast = new Forecast(days)
+    val forecast: Forecast = Forecast(days)
     forecast
   }
 
   def prepareForecastPromising: Forecast = {
-    val ce1_1: ConditionEntry = new ConditionEntry("00:00", 50, 8, 5)
-    val ce1_2: ConditionEntry = new ConditionEntry("01:00", 40, 7, 4)
+    val ce1_1: ConditionEntry = ConditionEntry("00:00", 50, 8, 5)
+    val ce1_2: ConditionEntry = ConditionEntry("01:00", 40, 7, 4)
     val conditionEntries1: Seq[ConditionEntry] = List(ce1_1, ce1_2)
-    val day1: Day = new Day(conditionEntries1, "2015-01-01")
-    val ce2_1: ConditionEntry = new ConditionEntry("00:00", 50, 21, 14)
-    val ce2_2: ConditionEntry = new ConditionEntry("01:00", 30, 15, 10)
+    val day1: Day =  Day(conditionEntries1, "2015-01-01")
+    val ce2_1: ConditionEntry = ConditionEntry("00:00", 50, 21, 14)
+    val ce2_2: ConditionEntry = ConditionEntry("01:00", 30, 15, 10)
     val conditionEntries2: Seq[ConditionEntry] = List(ce2_1, ce2_2)
-    val day2: Day = new Day(conditionEntries2, "2015-01-02")
+    val day2: Day = Day(conditionEntries2, "2015-01-02")
     val days: Seq[Day] = List(day1, day2)
-    val forecast: Forecast = new Forecast(days)
+    val forecast: Forecast = Forecast(days)
     forecast
   }
 
   def prepareForecastHigh: Forecast = {
-    val ce1_1: ConditionEntry = new ConditionEntry("00:00", 50, 8, 5)
-    val ce1_2: ConditionEntry = new ConditionEntry("01:00", 40, 7, 40)
+    val ce1_1: ConditionEntry = ConditionEntry("00:00", 50, 8, 5)
+    val ce1_2: ConditionEntry = ConditionEntry("01:00", 40, 7, 40)
     val conditionEntries1: Seq[ConditionEntry] = List(ce1_1, ce1_2)
-    val day1: Day = new Day(conditionEntries1, "2015-01-01")
-    val ce2_1: ConditionEntry = new ConditionEntry("00:00", 50, 21, 14)
-    val ce2_2: ConditionEntry = new ConditionEntry("01:00", 30, 15, 10)
+    val day1: Day =  Day(conditionEntries1, "2015-01-01")
+    val ce2_1: ConditionEntry = ConditionEntry("00:00", 50, 21, 14)
+    val ce2_2: ConditionEntry = ConditionEntry("01:00", 30, 15, 10)
     val conditionEntries2: Seq[ConditionEntry] = List(ce2_1, ce2_2)
-    val day2: Day = new Day(conditionEntries2, "2015-01-02")
+    val day2: Day = Day(conditionEntries2, "2015-01-02")
     val days: Seq[Day] = List(day1, day2)
-    val forecast: Forecast = new Forecast(days)
+    val forecast: Forecast = Forecast(days)
     forecast
   }
 
@@ -93,9 +93,9 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return None rating if no wind found in the forecast" in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan = NotificationPlan("mail")
       val forecast: Forecast = prepareForecastNone
-      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
       val forecastRatingFuture = forecastJudge ? notificationPlanExecuteMessage
       val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
@@ -103,9 +103,9 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return POOR rating if some wind found in the forecast" in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan =  NotificationPlan("mail")
       val forecast: Forecast = prepareForecastPoor
-      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
       val forecastRatingFuture = forecastJudge ? notificationPlanExecuteMessage
       val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
@@ -114,9 +114,9 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return PROMISING rating if nice wind found in the forecast" in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan = NotificationPlan("mail")
       val forecast: Forecast = prepareForecastPromising
-      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
       val forecastRatingFuture = forecastJudge ? notificationPlanExecuteMessage
       val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
@@ -125,9 +125,9 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return HIGH rating if good wind found in the forecast" in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan = NotificationPlan("mail")
       val forecast: Forecast = prepareForecastHigh
-      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
       val forecastRatingFuture = forecastJudge ? notificationPlanExecuteMessage
       val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
