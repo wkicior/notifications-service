@@ -52,7 +52,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
-      |Sends notification to NotificationComposer on good conditions""".stripMargin in {
+      |Sends notification to NotificationSender on good conditions""".stripMargin in {
       val plan: NotificationPlan = new NotificationPlan("mail")
       val forecast: Forecast = prepareForecast
       val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
@@ -60,7 +60,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
       val forecastRating = new ForecastRating(Rating.PROMISING, DateTime.now)
       forecastJudgeProbe.reply(forecastRating)
-      notificationComposerProbe.expectMsg(new NotificationComposerMessage(plan, forecastRating))
+      notificationComposerProbe.expectMsg(new NotificationComposerMessage(plan, forecastRating, forecast))
     }
   }
 

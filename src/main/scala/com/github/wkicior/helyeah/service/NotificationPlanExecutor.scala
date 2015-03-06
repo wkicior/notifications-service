@@ -10,7 +10,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 object NotificationPlanExecutor {
-  def props(): Props = Props(new NotificationPlanExecutor(ForecastJudge.props, NotificationComposer.props))
+  def props(): Props = Props(new NotificationPlanExecutor(ForecastJudge.props, NotificationSender.props))
   def props(fjep: Props, nsp:Props): Props = Props(new NotificationPlanExecutor(fjep, nsp))
 }
 
@@ -44,7 +44,7 @@ class NotificationPlanExecutor(forecastJudgeProps: Props, notificationComposerPr
   def sendNotificationToComposer(message: NotificationPlanExecutorMessage, forecastRating: ForecastRating) = {
     log.debug("It's a surf time")
     val notificationComposer = context.actorOf(notificationComposerProps)
-    notificationComposer ! NotificationComposerMessage(message.notificationPlan, forecastRating)
+    notificationComposer ! NotificationComposerMessage(message.notificationPlan, forecastRating, message.forecast)
   }
 
   def receive = {
