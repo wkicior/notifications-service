@@ -25,6 +25,9 @@ class NotificationSender extends Actor {
 
   def composeMessage(message: NotificationComposerMessage) = {
     val notification = Notification(message.plan, "It's windy ;)", message.forecastRating, message.forecast)
+    import com.github.wkicior.helyeah.application.JsonProtocol._
+    import spray.json._
+    log.info(s"Sending notification: ${notification.toJson}")
     this.sendMessage(notification)
   }
 
