@@ -17,7 +17,7 @@ case class NotificationComposerMessage(plan: NotificationPlan, forecastRating: F
  */
 object NotificationSender {
   def props(): Props = Props(new NotificationSender())
-  val MAIL_SERVICE_URL = "http://mail-service/notifications/send"
+  val MAIL_SERVICE_URL = "http://mail-gateway/notifications/send"
 }
 
 class NotificationSender extends Actor {
@@ -39,7 +39,7 @@ class NotificationSender extends Actor {
     val response: Future[HttpResponse] = pipeline(Post(NotificationSender.MAIL_SERVICE_URL, notification))
     response.onComplete {
       case Success(msg) =>
-        log.info("Notification successfully sent ${msg}")
+        log.info(s"Notification successfully sent ${msg}")
       case Failure(error) =>
         log.error(error, "Couldn't post message")
     }
