@@ -93,7 +93,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return None rating if no wind found in the forecast" in {
-      val plan: NotificationPlan = NotificationPlan("mail")
+      val plan: NotificationPlan = NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecastNone
       val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
@@ -103,7 +103,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return POOR rating if some wind found in the forecast" in {
-      val plan: NotificationPlan =  NotificationPlan("mail")
+      val plan: NotificationPlan =  NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecastPoor
       val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
@@ -114,7 +114,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return PROMISING rating if nice wind found in the forecast" in {
-      val plan: NotificationPlan = NotificationPlan("mail")
+      val plan: NotificationPlan = NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecastPromising
       val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)
@@ -125,7 +125,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "return HIGH rating if good wind found in the forecast" in {
-      val plan: NotificationPlan = NotificationPlan("mail")
+      val plan: NotificationPlan = NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecastHigh
       val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
       implicit val timeout = Timeout(1000 milliseconds)

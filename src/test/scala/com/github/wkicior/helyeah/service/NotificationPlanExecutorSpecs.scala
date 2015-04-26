@@ -43,7 +43,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
     """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
       |Giving up on poor conditions""".stripMargin in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan = new NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecast
       val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
       notificationPlanExecutor ! notificationPlanExecuteMessage
@@ -53,7 +53,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
 
     """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
       |Sends notification to NotificationSender on good conditions""".stripMargin in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan = new NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecast
       val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
       notificationPlanExecutor ! notificationPlanExecuteMessage

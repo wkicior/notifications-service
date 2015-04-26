@@ -30,7 +30,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
     }
 
     "compose and send a message" in {
-      val plan: NotificationPlan = NotificationPlan("test@localhost")
+      val plan: NotificationPlan = NotificationPlan("test@localhost", "href")
       val rating: ForecastRating = ForecastRating(Rating.HIGH, DateTime.now)
       val forecast: Forecast = Forecast(Seq())
       notificationSender ! NotificationComposerMessage(plan, rating, forecast)

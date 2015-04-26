@@ -1,5 +1,7 @@
 organization  := "com.github.wkicior"
 
+name := "notification-service"
+
 version       := "0.1"
 
 scalaVersion  := "2.11.2"

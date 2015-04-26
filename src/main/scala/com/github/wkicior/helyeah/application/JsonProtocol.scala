@@ -36,7 +36,7 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
     }
   }
   implicit val forecastRatingFormat = jsonFormat2(ForecastRating)
-  implicit val notificationPlanFormat = jsonFormat1(NotificationPlan)
+  implicit val notificationPlanFormat = jsonFormat2(NotificationPlan)
   implicit val notificationFormat = jsonFormat4(Notification)
 }
 
