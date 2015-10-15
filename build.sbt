@@ -22,7 +22,8 @@ libraryDependencies ++= {
     "org.specs2"          %%  "specs2-core"   % "2.3.11" % "test",
     "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test",
     "com.github.nscala-time" %% "nscala-time" % "1.8.0",
-    "org.mongodb" 		  %% "casbah" % "2.8.1"
+    "org.mongodb" 		  %% "casbah" % "2.8.1",
+    "com.novus" 		  %% "salat" % "1.9.9"
   )
 }
 

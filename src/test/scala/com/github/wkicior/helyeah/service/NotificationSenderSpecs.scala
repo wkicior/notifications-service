@@ -6,6 +6,9 @@ import com.github.wkicior.helyeah.model._
 import com.typesafe.config.ConfigFactory
 import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import akka.testkit.TestProbe
+import akka.actor.Props
+import akka.actor.Actor
 
 /**
  * Created by disorder on 04.03.15.
@@ -19,8 +22,24 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   override def afterAll {
     TestKit.shutdownActorSystem(system)
   }
+  object NotificationSenderMocked {
+    def props(notificationRepositoryProps: Props): Props = Props(new NotificationSenderMocked(notificationRepositoryProps))
 
-  val notificationSender = system.actorOf( NotificationSender.props())
+  }
+  class NotificationSenderMocked(nrp: Props) extends NotificationSender(nrp) {
+     override def sendMessage(notification: Notification): Unit = {
+       //
+     }
+  }
+  
+  val notificationRepositoryProbe = TestProbe()
+  val notificationRepositoryProps = Props(new Actor {
+    def receive = {
+      case x => notificationRepositoryProbe.ref forward x
+    }
+  })
+
+  val notificationSender = system.actorOf(NotificationSenderMocked.props(notificationRepositoryProps))
 
   "An NotificationSender actor" must {
     "reject other message than NotificationRequest" in {
@@ -29,11 +48,14 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       }
     }
 
-    "compose and send a message" in {
+    "compose, save and send a message" in {
       val plan: NotificationPlan = NotificationPlan("test@localhost", "href")
       val rating: ForecastRating = ForecastRating(Rating.HIGH, DateTime.now)
       val forecast: Forecast = Forecast(Seq())
       notificationSender ! NotificationComposerMessage(plan, rating, forecast)
+      val notification = Notification(plan, "It's windy ;)", rating, forecast)
+      val saveNotificationMessage = SaveNotificationMessage(notification)
+      notificationRepositoryProbe.expectMsg(saveNotificationMessage)
     }
   }
 }
