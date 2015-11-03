@@ -24,7 +24,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
   
   object NotificationsMongoDAOTest extends NotificationsMongoDAO {
      val mongoClient =  MongoClient("notifications-mongo", 27017)
-     val db = mongoClient("notifications-test-db")
+     val db = mongoClient("notifications-test-db-2")
      val collection = db("notifications")
   }
 

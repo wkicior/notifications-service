@@ -8,9 +8,11 @@ import org.joda.time.DateTime
 import com.github.wkicior.helyeah.model.Rating
 import com.github.wkicior.helyeah.model.Notification
 import com.github.wkicior.helyeah.model.NotificationPlan
+import org.specs2.mutable.Before
 
 
-class NotificationsMongoDAOSpecs extends Specification {
+
+class NotificationsMongoDAOSpecs extends Specification with Before {
   object NotificationsMongoDAOTest extends NotificationsMongoDAO {
      val mongoClient =  MongoClient("notifications-mongo", 27017)
      val db = mongoClient("notifications-test-db")
@@ -22,22 +24,23 @@ class NotificationsMongoDAOSpecs extends Specification {
   val forecast: Forecast = Forecast(Seq())      
   val notification = Notification(planx, "It's windy ;)", rating, forecast)
   
-  def is = s2"""
+  def is = sequential ^ s2"""
 
  This is a specification to check the NotificationsRepository
 
  The NotificationsRepository should
    return an empty collection                                    $e1
-   save new notification                                         $e2
-   end with 'world'                                              $e3
+   save new notification                                         $create
                                                                  """
   val notificationsMongoDAO = NotificationsMongoDAOTest.collection
   
-  //def e1 = notificationsRepository.count() mustEqual 0
+  
   def e1 = NotificationsMongoDAOTest.count() mustEqual 0
-  //def e1 = "Hello world" must have size(12)  
-  NotificationsMongoDAOTest.save(notification)
-  def e2 = NotificationsMongoDAOTest.count() mustEqual 1
-  def e3 = "Hello world" must endWith("world")
+  
+  def create = {
+    NotificationsMongoDAOTest.save(notification) 
+    notificationsMongoDAO.find().count() mustEqual 1
+  }
+  def before = NotificationsMongoDAOTest.db.dropDatabase()
 }
   

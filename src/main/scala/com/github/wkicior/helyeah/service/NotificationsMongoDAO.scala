@@ -7,6 +7,8 @@ import com.novus.salat._
 import com.novus.salat.annotations._
 import com.novus.salat.global._
 import com.github.wkicior.helyeah.model.NotificationPlan
+import com.mongodb.casbah.commons.conversions.scala.RegisterConversionHelpers
+import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
 
 abstract class NotificationsMongoDAO {
   val collection:MongoCollection
@@ -21,6 +23,7 @@ abstract class NotificationsMongoDAO {
    }
    
    def save(notification:Notification) {
+     println("************")
      val notificationObj = grater[Notification].asDBObject(notification)
      collection += notificationObj
    }
@@ -31,6 +34,8 @@ abstract class NotificationsMongoDAO {
   
 }
 object NotificationsMongoDAO extends NotificationsMongoDAO {
+  RegisterConversionHelpers()
+  RegisterJodaTimeConversionHelpers()
   val mongoClient = MongoClient("notifications-mongo", 27017)
   val db = mongoClient("notifications-db")
   val collection = db("notifications")  
