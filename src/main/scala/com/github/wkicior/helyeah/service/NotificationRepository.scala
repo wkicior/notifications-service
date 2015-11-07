@@ -33,6 +33,11 @@ class NotificationRepository(dao:NotificationsMongoDAO) extends Actor {
     case s:SaveNotificationMessage =>
       log.info("saving " + s.notification)
       dao.save(s.notification)
+    case q:QueryLastNotificationMessage =>
+      log.info("query: " + q.notificationPlan)
+      val notification:Option[Notification]= dao.findLastByPlan(q.notificationPlan)
+      log.info("found: " + notification)
+      sender() ! notification
     case _ => log.error("Unknown message")
   }
 }

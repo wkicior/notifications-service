@@ -6,9 +6,13 @@ import com.github.wkicior.helyeah.model.Notification
 import com.novus.salat._
 import com.novus.salat.annotations._
 import com.novus.salat.global._
+import com.mongodb.casbah.Imports._
 import com.github.wkicior.helyeah.model.NotificationPlan
 import com.mongodb.casbah.commons.conversions.scala.RegisterConversionHelpers
 import com.mongodb.casbah.commons.conversions.scala.RegisterJodaTimeConversionHelpers
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.casbah.commons.MongoDBObject
+import com.mongodb.DBObject
 
 abstract class NotificationsMongoDAO {
   val collection:MongoCollection
@@ -23,13 +27,15 @@ abstract class NotificationsMongoDAO {
    }
    
    def save(notification:Notification) {
-     println("************")
      val notificationObj = grater[Notification].asDBObject(notification)
      collection += notificationObj
    }
    
-   def find(plan:NotificationPlan) {
-     //collection.find
+   def findLastByPlan(plan:NotificationPlan):Option[Notification] =  {
+     val q = MongoDBObject("plan.href" -> plan.href)
+     val order = MongoDBObject("rating.startingFrom" -> -1)
+     val notificationDbObj:Option[DBObject] = collection.findOne(q, orderBy = order)
+     return notificationDbObj.map(grater[Notification].asObject(_))
    }
   
 }

@@ -3,11 +3,15 @@ package com.github.wkicior.helyeah.service
 
 import akka.actor.ActorSystem
 import akka.testkit.{EventFilter, ImplicitSender, TestKit}
+import akka.pattern.ask
 import com.github.wkicior.helyeah.model._
+import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 import org.joda.time.DateTime
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
 import com.mongodb.casbah.MongoClient
+import scala.concurrent.Await
+import akka.util.Timeout
 
 /**
  * @author disorder
@@ -42,6 +46,12 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       val forecast: Forecast = Forecast(Seq())      
       val notification = Notification(plan, "It's windy ;)", rating, forecast)           
       notificationRepository ! SaveNotificationMessage(notification)
+    }
+    "return last saved notification within notification plan" in {
+      implicit val timeout = Timeout(10000 milliseconds)
+      val plan: NotificationPlan = NotificationPlan("test@localhost", "href")
+      val notificationFuture = notificationRepository ? QueryLastNotificationMessage(plan)
+      val notification = Await.result(notificationFuture, timeout.duration).asInstanceOf[Option[Notification]];
     }
   }
 }

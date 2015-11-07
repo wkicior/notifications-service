@@ -19,10 +19,13 @@ class NotificationsMongoDAOSpecs extends Specification with Before {
      val collection = db("notifications")
   }
   
-  val planx: NotificationPlan = NotificationPlan("test@localhost", "href")
+  val plan1: NotificationPlan = NotificationPlan("test@localhost", "href")
   val rating: ForecastRating = ForecastRating(Rating.HIGH, DateTime.now)
   val forecast: Forecast = Forecast(Seq())      
-  val notification = Notification(planx, "It's windy ;)", rating, forecast)
+  val notification = Notification(plan1, "It's windy ;)", rating, forecast)
+  
+  val ratingPrevious: ForecastRating = ForecastRating(Rating.HIGH, new DateTime(0))
+  val notificationPrevious = Notification(plan1, "It was windy", ratingPrevious, forecast)
   
   def is = sequential ^ s2"""
 
@@ -31,6 +34,8 @@ class NotificationsMongoDAOSpecs extends Specification with Before {
  The NotificationsRepository should
    return an empty collection                                    $e1
    save new notification                                         $create
+   return last notification by plan                              $findByPlan
+   return None notification if was not saved before              $findNoPlan
                                                                  """
   val notificationsMongoDAO = NotificationsMongoDAOTest.collection
   
@@ -38,8 +43,20 @@ class NotificationsMongoDAOSpecs extends Specification with Before {
   def e1 = NotificationsMongoDAOTest.count() mustEqual 0
   
   def create = {
+    NotificationsMongoDAOTest.save(notificationPrevious)
     NotificationsMongoDAOTest.save(notification) 
-    notificationsMongoDAO.find().count() mustEqual 1
+    notificationsMongoDAO.find().count() mustEqual 2
+  }
+  
+  def findByPlan = {    
+    val foundNotification:Option[Notification]  = NotificationsMongoDAOTest.findLastByPlan(plan1)
+    foundNotification.get mustEqual notification    
+  }
+  
+  def findNoPlan = {
+    val plan2: NotificationPlan = NotificationPlan("test2@localhost", "href2")
+    val foundNotification:Option[Notification]  = NotificationsMongoDAOTest.findLastByPlan(plan2)
+    foundNotification.isDefined mustEqual false
   }
   def before = NotificationsMongoDAOTest.db.dropDatabase()
 }
