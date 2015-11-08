@@ -87,10 +87,10 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       notificationPlanExecutor ! notificationPlanExecuteMessage
       forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
       val now = DateTime.now
-      val forecastRating = new ForecastRating(Rating.PROMISING, now)
+      val forecastRating = new ForecastRating(Rating.HIGH, now)
       notificationRepositoryProbe.expectMsg(queryLastNotificationMessage)
       forecastJudgeProbe.reply(forecastRating)
-      val previousRating = ForecastRating(Rating.PROMISING, now)
+      val previousRating = ForecastRating(Rating.HIGH, now)
       val previousForecast  = prepareForecast
       notificationRepositoryProbe.reply(Some(Notification(plan, "msg", previousRating, previousForecast)))
       notificationComposerProbe.expectNoMsg()

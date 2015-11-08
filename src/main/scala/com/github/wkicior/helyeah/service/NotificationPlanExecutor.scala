@@ -35,15 +35,18 @@ class NotificationPlanExecutor(forecastJudgeProps: Props,
 
   def executeNotificationPlan(message: NotificationPlanExecutorMessage) {
     log.info(s"executing message: ${message}")
-    implicit val timeout = Timeout(1000 milliseconds)
+    implicit val timeout = Timeout(3000 milliseconds)
     val forecastRatingFuture = forecastJudge ? message
  		val previousNotificationFuture = notificationRepository ? QueryLastNotificationMessage(message.notificationPlan)
     val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
     forecastRating.rating match {
       case Rating.NONE | Rating.POOR => log.info("No wind this time")
-      case Rating.PROMISING | Rating.HIGH 
-        if noSuchNotificationSent(previousNotificationFuture, forecastRating, message) 
-          => sendNotificationToComposer(message, forecastRating)
+      case Rating.PROMISING | Rating.HIGH =>
+        if (noSuchNotificationSent(previousNotificationFuture, forecastRating, message)) { 
+          sendNotificationToComposer(message, forecastRating)
+        } else {
+          log.info("notification already sent, skipping")
+        }
       case default => log.error(s"Unrecognized rating ${default}")
     }
   }
@@ -52,7 +55,7 @@ class NotificationPlanExecutor(forecastJudgeProps: Props,
    * Checks whether such notification candidate was already sent
    */
   def noSuchNotificationSent(previousNotificationFuture:Future[Any], forecastRating:ForecastRating, message:NotificationPlanExecutorMessage): Boolean = {
-    implicit val timeout = Timeout(1000 milliseconds)
+    implicit val timeout = Timeout(3000 milliseconds)
     val notificationOpt = Await.result(previousNotificationFuture, timeout.duration).asInstanceOf[Option[Notification]]
     return notificationOpt match {
       case None => true

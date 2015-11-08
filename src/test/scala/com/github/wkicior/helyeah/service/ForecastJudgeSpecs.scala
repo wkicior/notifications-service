@@ -96,7 +96,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       val plan: NotificationPlan = NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecastNone
       val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
-      implicit val timeout = Timeout(1000 milliseconds)
+      implicit val timeout = Timeout(2000 milliseconds)
       val forecastRatingFuture = forecastJudge ? notificationPlanExecuteMessage
       val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
       forecastRating.rating should be(Rating.NONE)
@@ -106,7 +106,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       val plan: NotificationPlan =  NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecastPoor
       val notificationPlanExecuteMessage = NotificationPlanExecutorMessage(plan, forecast)
-      implicit val timeout = Timeout(1000 milliseconds)
+      implicit val timeout = Timeout(2000 milliseconds)
       val forecastRatingFuture = forecastJudge ? notificationPlanExecuteMessage
       val forecastRating = Await.result(forecastRatingFuture, timeout.duration).asInstanceOf[ForecastRating]
       forecastRating.rating should be(Rating.POOR)

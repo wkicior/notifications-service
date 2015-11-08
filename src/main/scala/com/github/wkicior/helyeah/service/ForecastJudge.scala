@@ -26,7 +26,7 @@ class ForecastJudge extends Actor {
           case knots if 0 until 6 contains knots => ForecastRating(Rating.NONE, dateTime)
           case knots if 6 until 12 contains knots => ForecastRating(Rating.POOR, dateTime)
           case knots if 12 until 16 contains knots => ForecastRating(Rating.PROMISING, dateTime)
-          case knots if knots > 16 => ForecastRating(Rating.HIGH, dateTime)
+          case knots if knots >= 16 => ForecastRating(Rating.HIGH, dateTime)
           case broken => {
             log.warning(s"unmatched knots value: ${broken}")
             ForecastRating(Rating.NONE, dateTime)
