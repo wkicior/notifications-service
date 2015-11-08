@@ -32,8 +32,15 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       case x => notificationComposerProbe.ref forward x
     }
   })
+  
+  val notificationRepositoryProbe = TestProbe()
+  val notificationRepositoryProps = Props(new Actor {
+    def receive = {
+      case x => notificationRepositoryProbe.ref forward x
+    }
+  })
 
-  val notificationPlanExecutor = system.actorOf(NotificationPlanExecutor.props(forecastJudgeProps, notificationComposerProps))
+  val notificationPlanExecutor = system.actorOf(NotificationPlanExecutor.props(forecastJudgeProps, notificationComposerProps, notificationRepositoryProps))
 
   "A NotificationPlanExecutor actor" must {
     "reject other message than NotificationRequest" in {
@@ -41,25 +48,70 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
         notificationPlanExecutor ! "fail"
       }
     }
-    """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
+    """ask NotificationRepository for previous notification, 
+      |ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
       |Giving up on poor conditions""".stripMargin in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      val plan: NotificationPlan = new NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecast
       val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val queryLastNotificationMessage = new QueryLastNotificationMessage(plan)
       notificationPlanExecutor ! notificationPlanExecuteMessage
       forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
+      notificationRepositoryProbe.expectMsg(queryLastNotificationMessage)
       forecastJudgeProbe.reply(ForecastRating(Rating.POOR, DateTime.now))
     }
 
     """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
-      |Sends notification to NotificationSender on good conditions""".stripMargin in {
-      val plan: NotificationPlan = new NotificationPlan("mail")
+      |Sends notification to NotificationSender on good conditions.
+      |When no previous notification was sent""".stripMargin in {
+      val plan: NotificationPlan = new NotificationPlan("mail", "href")
       val forecast: Forecast = prepareForecast
       val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val queryLastNotificationMessage = new QueryLastNotificationMessage(plan)
       notificationPlanExecutor ! notificationPlanExecuteMessage
       forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
       val forecastRating = new ForecastRating(Rating.PROMISING, DateTime.now)
+      notificationRepositoryProbe.expectMsg(queryLastNotificationMessage)
       forecastJudgeProbe.reply(forecastRating)
+      notificationRepositoryProbe.reply(None)
+      notificationComposerProbe.expectMsg(new NotificationComposerMessage(plan, forecastRating, forecast))
+    }
+      
+    """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
+      |Does not send notification to NotificationSender on good conditions.
+      |because of the previous notification""".stripMargin in {
+      val plan: NotificationPlan = new NotificationPlan("mail", "href")
+      val forecast: Forecast = prepareForecast
+      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val queryLastNotificationMessage = new QueryLastNotificationMessage(plan)
+      notificationPlanExecutor ! notificationPlanExecuteMessage
+      forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
+      val now = DateTime.now
+      val forecastRating = new ForecastRating(Rating.HIGH, now)
+      notificationRepositoryProbe.expectMsg(queryLastNotificationMessage)
+      forecastJudgeProbe.reply(forecastRating)
+      val previousRating = ForecastRating(Rating.HIGH, now)
+      val previousForecast  = prepareForecast
+      notificationRepositoryProbe.reply(Some(Notification(plan, "msg", previousRating, previousForecast)))
+      notificationComposerProbe.expectNoMsg()
+    }
+      
+    """ask ForecastJudge for the forecast against the NotificationPlan on NotificationExecutor message.
+      |Sends notification to NotificationSender on good conditions.
+      |When previous notification was sent but on different date""".stripMargin in {
+      val plan: NotificationPlan = new NotificationPlan("mail", "href")
+      val forecast: Forecast = prepareForecast
+      val notificationPlanExecuteMessage = new NotificationPlanExecutorMessage(plan, forecast)
+      val queryLastNotificationMessage = new QueryLastNotificationMessage(plan)
+      notificationPlanExecutor ! notificationPlanExecuteMessage
+      forecastJudgeProbe.expectMsg(notificationPlanExecuteMessage)
+      val now = DateTime.now
+      val forecastRating = new ForecastRating(Rating.PROMISING, now)
+      notificationRepositoryProbe.expectMsg(queryLastNotificationMessage)
+      forecastJudgeProbe.reply(forecastRating)
+      val previousForecast  = prepareForecast
+      val previousRating = ForecastRating(Rating.PROMISING, now.plusHours(1))
+      notificationRepositoryProbe.reply(Some(Notification(plan, "msg", previousRating, previousForecast)))
       notificationComposerProbe.expectMsg(new NotificationComposerMessage(plan, forecastRating, forecast))
     }
   }

@@ -1,6 +1,6 @@
 package com.github.wkicior.helyeah.application
 
-import com.github.wkicior.helyeah.model.Rating.Rating
+import com.github.wkicior.helyeah.model.Rating
 import com.github.wkicior.helyeah.model._
 import org.joda.time.DateTime
 import spray.httpx.SprayJsonSupport
@@ -16,8 +16,8 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
   implicit val forecastFormat = jsonFormat1(Forecast)
   implicit val notificationRequestFormat = jsonFormat1(NotificationRequest)
 
-  implicit object RatingJsonFormat extends RootJsonFormat[Rating] {
-    def write(r: Rating) = JsString(r.toString)
+  implicit object RatingJsonFormat extends RootJsonFormat[Rating.Value] {
+    def write(r: Rating.Value) = JsString(r.toString)
     def read(value: JsValue) = {
       value.asJsObject.toString() match {
         case str:String => Rating.withName(str)
@@ -36,7 +36,7 @@ object JsonProtocol extends DefaultJsonProtocol with SprayJsonSupport {
     }
   }
   implicit val forecastRatingFormat = jsonFormat2(ForecastRating)
-  implicit val notificationPlanFormat = jsonFormat1(NotificationPlan)
+  implicit val notificationPlanFormat = jsonFormat2(NotificationPlan)
   implicit val notificationFormat = jsonFormat4(Notification)
 }
 

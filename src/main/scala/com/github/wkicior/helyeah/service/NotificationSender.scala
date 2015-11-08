@@ -16,19 +16,27 @@ case class NotificationComposerMessage(plan: NotificationPlan, forecastRating: F
  * Created by disorder on 25.02.15.
  */
 object NotificationSender {
-  def props(): Props = Props(new NotificationSender())
+  def props(): Props = Props(new NotificationSender(NotificationRepository.props))
   val MAIL_SERVICE_URL = "http://mail-gateway/notifications/send"
 }
 
-class NotificationSender extends Actor {
+case class NotificationSenderException(cause:Throwable) extends Exception
+  
+class NotificationSender(notificationRepositoryProps: Props) extends Actor {
   val log = Logging(context.system, this)
+  val notificationRepository = context.actorOf(notificationRepositoryProps)
 
   def composeMessage(message: NotificationComposerMessage) = {
     val notification = Notification(message.plan, "It's windy ;)", message.forecastRating, message.forecast)
     import com.github.wkicior.helyeah.application.JsonProtocol._
     import spray.json._
     log.info(s"Sending notification: ${notification.toJson}")
-    this.sendMessage(notification)
+    try {
+      this.sendMessage(notification)
+      notificationRepository ! SaveNotificationMessage(notification)
+    } catch {
+      case e:NotificationSenderException => log.error(e.cause, "Message not sent")
+    }
   }
 
   def sendMessage(notification: Notification): Unit = {
@@ -39,9 +47,10 @@ class NotificationSender extends Actor {
     val response: Future[HttpResponse] = pipeline(Post(NotificationSender.MAIL_SERVICE_URL, notification))
     response.onComplete {
       case Success(msg) =>
-        log.info(s"Notification successfully sent ${msg}")
+        log.info(s"Notification successfully sent ${msg}")        
       case Failure(error) =>
         log.error(error, "Couldn't post message")
+        throw new NotificationSenderException(error)
     }
   }
 
