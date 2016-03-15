@@ -5,12 +5,12 @@ import akka.event.Logging
 import akka.pattern.ask
 import akka.util.Timeout
 import com.github.wkicior.helyeah.model.{NotificationPlan, NotificationRequest}
-
 import scala.concurrent.Await
 import scala.concurrent.duration._
+import scala.concurrent.Future
 
 object NotificationPlanDispatcher {
-  def props(): Props = Props(new NotificationPlanDispatcher(NotificationPlanRepository.props))
+  def props(): Props = Props(new NotificationPlanDispatcher(NotificationPlanServiceProxy.props))
   def props(nrp: Props): Props = Props(new NotificationPlanDispatcher(nrp))
 }
 
@@ -30,8 +30,9 @@ class NotificationPlanDispatcher(notificationRepositoryProps: Props) extends Act
   def processNotification(notificationRequest: NotificationRequest): Unit = {
     log.info(s"processing notification: ${notificationRequest.toString}")
     implicit val timeout = Timeout(5 seconds)
-    val plansFuture = NotificationPlanRepository ? GetNotificationPlans
-    val plans = Await.result(plansFuture, timeout.duration).asInstanceOf[Seq[NotificationPlan]]
+    val plansFutureFuture = NotificationPlanRepository ? GetNotificationPlans
+    val plansFuture = Await.result(plansFutureFuture, timeout.duration).asInstanceOf[Future[Iterable[NotificationPlan]]]
+    val plans = Await.result(plansFuture, timeout.duration).asInstanceOf[Iterable[NotificationPlan]]
     plans.foreach(plan => createNotificationExecutor ! NotificationPlanExecutorMessage(plan, notificationRequest.forecast))
   }
 

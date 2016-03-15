@@ -7,7 +7,7 @@ import com.novus.salat.annotations.raw.EnumAs
  * Currently contains only e-mail address of the user to be notified
  * Created by disorder on 22.02.15.
  */
-case class NotificationPlan(email: String, href: String)
+case class NotificationPlan(email: String, id: String)
 
 /**
  * The actual notification that is send to the user

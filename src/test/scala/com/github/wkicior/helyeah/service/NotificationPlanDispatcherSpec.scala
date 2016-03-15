@@ -4,7 +4,9 @@ import akka.actor._
 import akka.testkit.{EventFilter, ImplicitSender, TestKit, TestProbe}
 import com.github.wkicior.helyeah.model._
 import com.typesafe.config.ConfigFactory
+import scala.concurrent.ExecutionContext.Implicits.global
 import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpecLike}
+import scala.concurrent.Future
 
 /**
  * Created by disorder on 22.02.15.
@@ -59,7 +61,7 @@ with WordSpecLike with Matchers with BeforeAndAfterAll {
       notificationPlanDispatcher ! notificationRequest
 
       notificationPlanRepositoryProbe.expectMsg(GetNotificationPlans)
-      notificationPlanRepositoryProbe.reply(Seq(NotificationPlan("test@mail", "href"), NotificationPlan("test2@mail", "href")))
+      notificationPlanRepositoryProbe.reply(Future{Seq(NotificationPlan("test@mail", "href"), NotificationPlan("test2@mail", "href"))})
       notificationExecutorProbe.expectMsg(NotificationPlanExecutorMessage(NotificationPlan("test@mail", "href"), forecast))
       notificationExecutorProbe.expectMsg(NotificationPlanExecutorMessage(NotificationPlan("test2@mail", "href"), forecast))
     }

@@ -32,9 +32,9 @@ abstract class NotificationsMongoDAO {
    }
    
    def findLastByPlan(plan:NotificationPlan):Option[Notification] =  {
-     val q = MongoDBObject("plan.href" -> plan.href)
+     val q = MongoDBObject("plan.id" -> plan.id)
      val order = MongoDBObject("rating.startingFrom" -> -1)
-     val notificationDbObj:Option[DBObject] = collection.findOne(q, orderBy = order)
+     val notificationDbObj:Option[DBObject] = collection.findOne(q, orderBy = order)     
      return notificationDbObj.map(grater[Notification].asObject(_))
    }
   
